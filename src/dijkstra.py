@@ -23,6 +23,14 @@ class Dijkstra(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
+        msg = ev.msg
+        self.logger.debug('OFPSwitchFeatures received: '
+                          'datapath_id=0x%016x n_buffers=%d '
+                          'n_tables=%d auxiliary_id=%d '
+                          'capabilities=0x%08x',
+                          msg.datapath_id, msg.n_buffers, msg.n_tables,
+                          msg.auxiliary_id, msg.capabilities)
+
         datapath = ev.msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
