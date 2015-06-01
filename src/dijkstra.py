@@ -37,14 +37,14 @@ class Dijkstra(app_manager.RyuApp):
         else:
             reason = 'unknown'
 
-        self.logger.debug('OFPPortStatus received: reason=%s desc=%s',
+        self.logger.debug('### OFPPortStatus received: reason=%s desc=%s',
                           reason, msg.desc)
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         # Print SwitchFeatures message
         msg = ev.msg
-        self.logger.debug('OFPSwitchFeatures received: '
+        self.logger.debug('### OFPSwitchFeatures received: '
                           'datapath_id=0x%016x n_buffers=%d '
                           'n_tables=%d auxiliary_id=%d '
                           'capabilities=0x%08x',
