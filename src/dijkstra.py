@@ -8,6 +8,7 @@
 # =======================================
 __author__ = 'Parham Alvani'
 
+from ryu import utils
 from ryu.base import app_manager
 from ryu.ofproto import ofproto_v1_3
 from ryu.controller.handler import set_ev_cls
@@ -68,6 +69,28 @@ class Dijkstra(app_manager.RyuApp):
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
                                           ofproto.OFPCML_NO_BUFFER)]
         self.add_flow(datapath, 0, match, actions)
+
+    @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
+    def packet_in_handler(self, ev):
+        msg = ev.msg
+        dp = msg.datapath
+        ofp = dp.ofproto
+
+        if msg.reason == ofp.OFPR_NO_MATCH:
+            reason = 'NO MATCH'
+        elif msg.reason == ofp.OFPR_ACTION:
+            reason = 'ACTION'
+        elif msg.reason == ofp.OFPR_INVALID_TTL:
+            reason = 'INVALID TTL'
+        else:
+            reason = 'unknown'
+
+        self.logger.debug('OFPPacketIn received: '
+                          'buffer_id=%x total_len=%d reason=%s '
+                          'table_id=%d cookie=%d match=%s data=%s',
+                          msg.buffer_id, msg.total_len, reason,
+                          msg.table_id, msg.cookie, msg.match,
+                          utils.hex_array(msg.data))
 
     @staticmethod
     def add_flow(datapath, priority, match, actions, buffer_id=None):
