@@ -13,6 +13,7 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.controller.handler import set_ev_cls
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER
+from ryu.controller.handler import MAIN_DISPATCHER
 
 
 class Dijkstra(app_manager.RyuApp):
@@ -21,8 +22,27 @@ class Dijkstra(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(Dijkstra, self).__init__(*args, **kwargs)
 
+    @set_ev_cls(ofp_event.EventOFPPortStatus, MAIN_DISPATCHER)
+    def port_status_handler(self, ev):
+        msg = ev.msg
+        dp = msg.datapath
+        ofp = dp.ofproto
+
+        if msg.reason == ofp.OFPPR_ADD:
+            reason = 'ADD'
+        elif msg.reason == ofp.OFPPR_DELETE:
+            reason = 'DELETE'
+        elif msg.reason == ofp.OFPPR_MODIFY:
+            reason = 'MODIFY'
+        else:
+            reason = 'unknown'
+
+        self.logger.debug('OFPPortStatus received: reason=%s desc=%s',
+                          reason, msg.desc)
+
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
+        # Print SwitchFeatures message
         msg = ev.msg
         self.logger.debug('OFPSwitchFeatures received: '
                           'datapath_id=0x%016x n_buffers=%d '
