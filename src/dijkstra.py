@@ -8,6 +8,7 @@
 # =======================================
 __author__ = 'Parham Alvani'
 
+from ryu.lib import packet
 from ryu import utils
 from ryu.base import app_manager
 from ryu.ofproto import ofproto_v1_3
@@ -15,6 +16,7 @@ from ryu.controller.handler import set_ev_cls
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER
 from ryu.controller.handler import MAIN_DISPATCHER
+import array
 
 
 class Dijkstra(app_manager.RyuApp):
@@ -91,6 +93,10 @@ class Dijkstra(app_manager.RyuApp):
                           msg.buffer_id, msg.total_len, reason,
                           msg.table_id, msg.cookie, msg.match,
                           utils.hex_array(msg.data))
+
+        pkt = packet.Packet(array.array('B', ev.msg.data))
+        for p in pkt.protocols:
+            print(p)
 
     @staticmethod
     def add_flow(datapath, priority, match, actions, buffer_id=None):
