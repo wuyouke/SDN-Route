@@ -94,7 +94,7 @@ class Dijkstra(app_manager.RyuApp):
                           msg.table_id, msg.cookie, msg.match,
                           utils.hex_array(msg.data))
 
-        pkt = packet.Packet(array.array('B', ev.msg.data))
+        pkt = packet.packet.Packet(array.array('B', ev.msg.data))
         for p in pkt.protocols:
             print(p)
 
