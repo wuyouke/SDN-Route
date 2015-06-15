@@ -97,6 +97,8 @@ class Dijkstra(app_manager.RyuApp):
         pkt = packet.packet.Packet(array.array('B', ev.msg.data))
         for p in pkt.protocols:
             print(p)
+            if p.protocol_name == 'ipv4':
+                print(p.src)
 
     @staticmethod
     def add_flow(datapath, priority, match, actions, buffer_id=None):
